@@ -43,3 +43,5 @@ next-env.d.ts
 # Temporary files
 logo_base64.txt
 update_config.ps1
+
+ai-website-cloner-template/
