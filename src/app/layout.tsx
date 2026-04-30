@@ -5,6 +5,13 @@ export const metadata: Metadata = {
   title: "VibraX — The Future of Music Discovery",
   description: "Stream previews, discover new sounds, and build your own personalized music universe. Where Every Beat Finds You.",
   keywords: "music discovery, playlists, streaming, VibraX, music app",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+    viewportFit: "cover",
+  },
 };
 
 export default function RootLayout({

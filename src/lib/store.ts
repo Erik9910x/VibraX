@@ -29,71 +29,87 @@ interface PlayerState {
   toggleRepeat: () => void;
 }
 
-export const usePlayerStore = create<PlayerState>((set, get) => ({
-  currentTrack: null,
-  queue: [],
-  queueIndex: 0,
-  isPlaying: false,
-  volume: 70,
-  progress: 0,
-  duration: 0,
-  isMuted: false,
-  isShuffled: false,
-  repeatMode: 'off',
-
-  setTrack: (track) => {
-    set({ currentTrack: track, isPlaying: true, progress: 0, duration: track.duration });
-    // Add to history
-    useHistoryStore.getState().addToHistory(track);
-  },
-
-  setQueue: (tracks, startIndex = 0) => {
-    const track = tracks[startIndex];
-    set({ 
-      queue: tracks, 
-      queueIndex: startIndex, 
-      currentTrack: track, 
-      isPlaying: true, 
+export const usePlayerStore = create<PlayerState>()(
+  persist(
+    (set, get) => ({
+      currentTrack: null,
+      queue: [],
+      queueIndex: 0,
+      isPlaying: false,
+      volume: 70,
       progress: 0,
-      duration: track?.duration || 0,
-    });
-    if (track) useHistoryStore.getState().addToHistory(track);
-  },
+      duration: 0,
+      isMuted: false,
+      isShuffled: false,
+      repeatMode: 'off',
 
-  play: () => set({ isPlaying: true }),
-  pause: () => set({ isPlaying: false }),
-  togglePlay: () => set((s) => ({ isPlaying: !s.isPlaying })),
+      setTrack: (track) => {
+        set({ currentTrack: track, isPlaying: true, progress: 0, duration: track.duration });
+        // Add to history
+        useHistoryStore.getState().addToHistory(track);
+      },
 
-  next: () => {
-    const { queue, queueIndex, repeatMode } = get();
-    if (queue.length === 0) return;
-    let nextIndex = queueIndex + 1;
-    if (nextIndex >= queue.length) {
-      if (repeatMode === 'all') nextIndex = 0;
-      else { set({ isPlaying: false }); return; }
+      setQueue: (tracks, startIndex = 0) => {
+        const track = tracks[startIndex];
+        set({ 
+          queue: tracks, 
+          queueIndex: startIndex, 
+          currentTrack: track, 
+          isPlaying: true, 
+          progress: 0,
+          duration: track?.duration || 0,
+        });
+        if (track) useHistoryStore.getState().addToHistory(track);
+      },
+
+      play: () => set({ isPlaying: true }),
+      pause: () => set({ isPlaying: false }),
+      togglePlay: () => set((s) => ({ isPlaying: !s.isPlaying })),
+
+      next: () => {
+        const { queue, queueIndex, repeatMode } = get();
+        if (queue.length === 0) return;
+        let nextIndex = queueIndex + 1;
+        if (nextIndex >= queue.length) {
+          if (repeatMode === 'all') nextIndex = 0;
+          else { set({ isPlaying: false }); return; }
+        }
+        const track = queue[nextIndex];
+        set({ queueIndex: nextIndex, currentTrack: track, progress: 0, duration: track.duration, isPlaying: true });
+        useHistoryStore.getState().addToHistory(track);
+      },
+
+      previous: () => {
+        const { queue, queueIndex, progress } = get();
+        if (progress > 3) { set({ progress: 0 }); return; }
+        if (queue.length === 0) return;
+        const prevIndex = queueIndex > 0 ? queueIndex - 1 : queue.length - 1;
+        const track = queue[prevIndex];
+        set({ queueIndex: prevIndex, currentTrack: track, progress: 0, duration: track.duration, isPlaying: true });
+      },
+
+      setVolume: (v) => set({ volume: v, isMuted: v === 0 }),
+      toggleMute: () => set((s) => ({ isMuted: !s.isMuted })),
+      setProgress: (p) => set({ progress: p }),
+      toggleShuffle: () => set((s) => ({ isShuffled: !s.isShuffled })),
+      toggleRepeat: () => set((s) => ({
+        repeatMode: s.repeatMode === 'off' ? 'all' : s.repeatMode === 'all' ? 'one' : 'off',
+      })),
+    }),
+    { 
+      name: 'vibrax-player',
+      partialize: (state) => ({ 
+        currentTrack: state.currentTrack,
+        volume: state.volume,
+        isMuted: state.isMuted,
+        isShuffled: state.isShuffled,
+        repeatMode: state.repeatMode,
+        queue: state.queue,
+        queueIndex: state.queueIndex
+      })
     }
-    const track = queue[nextIndex];
-    set({ queueIndex: nextIndex, currentTrack: track, progress: 0, duration: track.duration, isPlaying: true });
-    useHistoryStore.getState().addToHistory(track);
-  },
-
-  previous: () => {
-    const { queue, queueIndex, progress } = get();
-    if (progress > 3) { set({ progress: 0 }); return; }
-    if (queue.length === 0) return;
-    const prevIndex = queueIndex > 0 ? queueIndex - 1 : queue.length - 1;
-    const track = queue[prevIndex];
-    set({ queueIndex: prevIndex, currentTrack: track, progress: 0, duration: track.duration, isPlaying: true });
-  },
-
-  setVolume: (v) => set({ volume: v, isMuted: v === 0 }),
-  toggleMute: () => set((s) => ({ isMuted: !s.isMuted })),
-  setProgress: (p) => set({ progress: p }),
-  toggleShuffle: () => set((s) => ({ isShuffled: !s.isShuffled })),
-  toggleRepeat: () => set((s) => ({
-    repeatMode: s.repeatMode === 'off' ? 'all' : s.repeatMode === 'all' ? 'one' : 'off',
-  })),
-}));
+  )
+);
 
 // ===== PLAYLIST STORE =====
 interface PlaylistState {
