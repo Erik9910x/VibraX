@@ -19,6 +19,7 @@ export interface Playlist {
   createdAt: string;
   shareCode: string;
   userId: string;
+  isPinned?: boolean;
 }
 
 export interface Artist {

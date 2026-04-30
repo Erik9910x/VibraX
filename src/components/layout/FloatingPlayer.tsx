@@ -296,7 +296,7 @@ export default function FloatingPlayer({ onMenuClick }: { onMenuClick?: () => vo
   // Download directly via Proxy API to force attachment
   const handleDownload = () => {
     const src = audioRef.current?.src || currentTrack?.previewUrl;
-    if (!src) return;
+    if (!src || !currentTrack) return;
     const downloadUrl = `/api/download?url=${encodeURIComponent(src)}&filename=${encodeURIComponent(`${currentTrack.artist} - ${currentTrack.title}.mp3`)}`;
     
     const a = document.createElement('a');

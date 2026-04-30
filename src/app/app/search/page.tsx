@@ -20,7 +20,7 @@ export default function SearchPage() {
   const [topTracks, setTopTracks] = useState<Track[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { setQueue } = usePlayerStore();
 
   // Load initial top tracks
