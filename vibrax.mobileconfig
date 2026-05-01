@@ -20,11 +20,11 @@
             <key>PayloadDisplayName</key>
             <string>Web Clip (VibraX)</string>
             <key>PayloadIdentifier</key>
-            <string>com.apple.webClip.managed.82F0CBA4-3B91-4263-BB53-C05FD30911A7</string>
+            <string>com.apple.webClip.managed.2E56F491-A511-4657-B80C-3849028F87B8</string>
             <key>PayloadType</key>
             <string>com.apple.webClip.managed</string>
             <key>PayloadUUID</key>
-            <string>82F0CBA4-3B91-4263-BB53-C05FD30911A7</string>
+            <string>2E56F491-A511-4657-B80C-3849028F87B8</string>
             <key>PayloadVersion</key>
             <integer>1</integer>
             <key>Precomposed</key>
@@ -36,7 +36,7 @@
     <key>PayloadDisplayName</key>
     <string>VibraX Installation Profile</string>
     <key>PayloadIdentifier</key>
-    <string>com.vibrax.install.AE3FDB70-22B2-481F-85E6-D5C6CE86C68D</string>
+    <string>com.vibrax.install.22EFE402-0362-4CDD-AD35-5C98A180698A</string>
     <key>PayloadOrganization</key>
     <string>VibraX Music</string>
     <key>PayloadRemovalDisallowed</key>
@@ -44,7 +44,7 @@
     <key>PayloadType</key>
     <string>Configuration</string>
     <key>PayloadUUID</key>
-    <string>AE3FDB70-22B2-481F-85E6-D5C6CE86C68D</string>
+    <string>22EFE402-0362-4CDD-AD35-5C98A180698A</string>
     <key>PayloadVersion</key>
     <integer>1</integer>
 </dict>
