@@ -44,6 +44,9 @@ export default function TrackInspectPage({ params }: { params: Promise<{ id: str
       setLoading(true);
       const data = await getTrackById(decodeURIComponent(id));
       setTrack(data);
+      if (data) {
+        document.title = `${data.title} | VibraX`;
+      }
       setLoading(false); // Unblock UI immediately
       
       if (data) {
@@ -56,6 +59,7 @@ export default function TrackInspectPage({ params }: { params: Promise<{ id: str
       }
     }
     load();
+    return () => { document.title = "VibraX"; };
   }, [id]);
 
   if (loading) {

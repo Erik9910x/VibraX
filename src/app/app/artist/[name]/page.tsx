@@ -24,11 +24,13 @@ export default function ArtistPage({ params }: { params: Promise<{ name: string 
   useEffect(() => {
     async function load() {
       setLoading(true);
+      document.title = `${decodedName} | VibraX`;
       const results = await searchTracks(decodedName, 20);
       setTracks(results);
       setLoading(false);
     }
     load();
+    return () => { document.title = "VibraX"; };
   }, [decodedName]);
 
   const handlePlayAll = () => {

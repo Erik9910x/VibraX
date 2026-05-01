@@ -273,14 +273,19 @@ interface SearchState {
   setLoading: (l: boolean) => void;
 }
 
-export const useSearchStore = create<SearchState>((set) => ({
-  query: '',
-  results: [],
-  isLoading: false,
-  setQuery: (q) => set({ query: q }),
-  setResults: (tracks) => set({ results: tracks }),
-  setLoading: (l) => set({ isLoading: l }),
-}));
+export const useSearchStore = create<SearchState>()(
+  persist(
+    (set) => ({
+      query: '',
+      results: [],
+      isLoading: false,
+      setQuery: (q) => set({ query: q }),
+      setResults: (tracks) => set({ results: tracks }),
+      setLoading: (l) => set({ isLoading: l }),
+    }),
+    { name: 'vibrax-search' }
+  )
+);
 
 // ===== ARTIST STORE =====
 interface FollowedArtist {

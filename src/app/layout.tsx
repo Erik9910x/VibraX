@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "VibraX — The Future of Music Discovery",
-  description: "Stream previews, discover new sounds, and build your own personalized music universe. Where Every Beat Finds You.",
+  title: "VibraX",
+  description: "VibraX — Your Personalized Music Universe. Where Every Beat Finds You.",
   keywords: "music discovery, playlists, streaming, VibraX, music app",
 };
 
@@ -29,6 +29,9 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#0b0e11" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/icon-192.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/icon-192.png" />
+        <link rel="apple-touch-icon" sizes="167x167" href="/icon-192.png" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

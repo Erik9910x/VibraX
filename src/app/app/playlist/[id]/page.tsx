@@ -32,8 +32,16 @@ export default function PlaylistDetailPage({ params }: { params: Promise<{ id: s
       }
     };
     document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
+    
+    if (playlist) {
+      document.title = `${playlist.title} | VibraX`;
+    }
+
+    return () => { 
+      document.removeEventListener('mousedown', handler);
+      document.title = "VibraX";
+    };
+  }, [playlist]);
 
   if (!playlist) {
     return (

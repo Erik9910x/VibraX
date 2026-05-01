@@ -20,6 +20,7 @@ const navItems = [
   { href: '/app/search', icon: Search, label: 'Search' },
   { href: '/app/library', icon: Library, label: 'Your Library' },
   { href: '/app/favorites', icon: Heart, label: 'Favorites' },
+  { href: '/app/profile', icon: User, label: 'Profile' },
 ];
 
 function SidebarPlaylistItem({ playlist, pathname, onToggle }: any) {

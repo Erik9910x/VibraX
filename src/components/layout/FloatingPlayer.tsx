@@ -37,6 +37,9 @@ export default function FloatingPlayer({ onMenuClick }: { onMenuClick?: () => vo
   useEffect(() => {
     audioRef.current = new Audio();
     audioRef.current.volume = volume / 100;
+    audioRef.current.setAttribute('playsinline', 'true');
+    audioRef.current.setAttribute('webkit-playsinline', 'true');
+    audioRef.current.preload = 'auto';
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
@@ -123,6 +126,15 @@ export default function FloatingPlayer({ onMenuClick }: { onMenuClick?: () => vo
       navigator.mediaSession.setActionHandler('seekto', null);
     };
   }, [currentTrack, togglePlay, next, previous, setProgress]);
+
+  // Update Page Title when playing
+  useEffect(() => {
+    if (currentTrack && isPlaying) {
+      document.title = `${currentTrack.title} | VibraX`;
+    } else if (!currentTrack) {
+      document.title = "VibraX";
+    }
+  }, [currentTrack, isPlaying]);
 
   // Handle Play/Pause
   useEffect(() => {
