@@ -22,7 +22,7 @@ export async function savePreset(data: unknown): Promise<string> {
   const id = Math.random().toString(36).substring(2, 7).toUpperCase();
   const code = `VIBRAX-${id}`;
 
-  const { error } = await getSupabase()
+  const { error } = await (getSupabase() as any)
     .from('presets')
     .insert([{ id: code, data }]);
 
@@ -35,7 +35,7 @@ export async function savePreset(data: unknown): Promise<string> {
 }
 
 export async function loadPreset(code: string): Promise<unknown> {
-  const { data, error } = await getSupabase()
+  const { data, error } = await (getSupabase() as any)
     .from('presets')
     .select('data')
     .eq('id', code.toUpperCase())

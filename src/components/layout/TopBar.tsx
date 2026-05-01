@@ -138,7 +138,7 @@ export default function TopBar({ onMenuClick }: { onMenuClick?: () => void }) {
               if (!val) return;
               try {
                 const { loadPreset } = await import('@/lib/supabase');
-                const state = await loadPreset(val);
+                const state = await loadPreset(val) as any;
                 const { useFavoritesStore, usePlaylistStore, useArtistStore } = await import('@/lib/store');
                 if (state.favorites) useFavoritesStore.setState({ favoriteIds: state.favorites });
                 if (state.playlists) usePlaylistStore.setState({ playlists: state.playlists });
