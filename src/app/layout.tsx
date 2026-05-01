@@ -5,6 +5,10 @@ export const metadata: Metadata = {
   title: "VibraX",
   description: "VibraX — Your Personalized Music Universe. Where Every Beat Finds You.",
   keywords: "music discovery, playlists, streaming, VibraX, music app",
+  icons: {
+    icon: "/icon-192.png",
+    apple: "/icon-192.png",
+  }
 };
 
 export const viewport = {
