@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 
 import { usePlayerStore, usePlaylistStore, useFavoritesStore, useHistoryStore, useArtistStore } from '@/lib/store';
-import { User, Music, Heart, ListMusic, History, Settings, ChevronRight, Share2, Shield, Info, LogOut, Disc, Headphones, TrendingUp } from 'lucide-react';
+import { User, Music, Heart, ListMusic, History, Settings, ChevronRight, Share2, Shield, Info, LogOut, Disc, Headphones, TrendingUp, Globe, Zap, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -13,6 +13,8 @@ export default function ProfilePage() {
   const playlists = usePlaylistStore((s) => s.playlists);
   const recentlyPlayed = useHistoryStore((s) => s.recentlyPlayed);
   const followedArtists = useArtistStore((s) => s.followedArtists);
+  
+  const clearHistory = useHistoryStore((s) => s.clearHistory);
   
   useEffect(() => {
     document.title = "Profile | VibraX";
@@ -90,7 +92,15 @@ export default function ProfilePage() {
                   <History className="w-5 h-5 text-[#fcd535]" />
                   Recently Played
                 </h2>
-                <Link href="/app/library" className="text-xs font-bold text-[#fcd535] hover:underline uppercase tracking-widest">View All</Link>
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => { if(confirm('Clear all listening history?')) clearHistory(); }}
+                    className="text-[10px] font-black text-white/20 hover:text-red-400 uppercase tracking-widest transition-colors"
+                  >
+                    Clear
+                  </button>
+                  <Link href="/app/library" className="text-xs font-bold text-[#fcd535] hover:underline uppercase tracking-widest">View All</Link>
+                </div>
               </div>
               
               <div className="space-y-2">
@@ -176,6 +186,15 @@ export default function ProfilePage() {
                     <div className="absolute left-1 top-1 w-3 h-3 bg-[#181a20] rounded-full shadow-sm" />
                   </div>
                 </button>
+                <button className="w-full flex items-center justify-between group">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-white/[0.05] flex items-center justify-center text-white/50 group-hover:text-white transition-colors">
+                      <Globe className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm font-medium text-white/80 group-hover:text-white">Language</span>
+                  </div>
+                  <span className="text-xs font-bold text-[#fcd535] uppercase">English (US)</span>
+                </button>
               </div>
               
               <div className="h-px bg-white/[0.06] my-6" />
@@ -194,6 +213,30 @@ export default function ProfilePage() {
               </div>
             </div>
 
+            {/* Device Info (Native feel) */}
+            <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/[0.05]">
+              <h3 className="text-sm font-bold text-white/40 uppercase tracking-wider mb-4">System Status</h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Zap className="w-3.5 h-3.5 text-[#fcd535]" />
+                    <span className="text-xs text-white/60">Server Latency</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-green-400">24ms</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Shield className="w-3.5 h-3.5 text-blue-400" />
+                    <span className="text-xs text-white/60">Encryption</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-white/40">AES-256</span>
+                </div>
+                <div className="flex items-center justify-between pt-2 border-t border-white/[0.05]">
+                  <span className="text-[10px] text-white/20 uppercase tracking-widest font-black">Build v1.0.4-stable</span>
+                </div>
+              </div>
+            </div>
+
             {/* Storage / Cache (App-like feel) */}
             <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/[0.05]">
               <h3 className="text-sm font-bold text-white/40 uppercase tracking-wider mb-4">Device Storage</h3>
@@ -206,8 +249,9 @@ export default function ProfilePage() {
               </div>
               <button 
                 onClick={() => alert('Cache cleared successfully!')}
-                className="text-[10px] font-black text-[#fcd535] uppercase tracking-widest hover:underline"
+                className="flex items-center gap-1.5 text-[10px] font-black text-[#fcd535] uppercase tracking-widest hover:underline"
               >
+                <Trash2 className="w-3 h-3" />
                 Clear Cache
               </button>
             </div>
@@ -223,6 +267,25 @@ export default function ProfilePage() {
               </p>
               <button className="px-6 py-2 rounded-full bg-[#181a20] text-white text-xs font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl">
                 Upgrade Now
+              </button>
+            </div>
+
+            {/* Cloud Sync (Preset System) */}
+            <div className="p-6 rounded-3xl bg-white/[0.03] border border-white/[0.05] relative overflow-hidden group">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-10 h-10 rounded-xl bg-[#fcd535]/10 flex items-center justify-center">
+                  <Shield className="w-5 h-5 text-[#fcd535]" />
+                </div>
+                <div className="px-2 py-1 rounded bg-green-500/10 text-[10px] font-bold text-green-400 uppercase tracking-widest">Connected</div>
+              </div>
+              <h3 className="text-lg font-bold text-white mb-1">Cloud Backup</h3>
+              <p className="text-white/40 text-xs mb-4">Your library is synced with Supabase.</p>
+              <div className="p-3 rounded-xl bg-white/[0.05] border border-white/[0.1] mb-4">
+                <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1">Backup Code</p>
+                <p className="text-lg font-mono font-black text-[#fcd535]">VIBRA-4X29B1</p>
+              </div>
+              <button className="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-bold transition-all border border-white/5">
+                Force Sync Now
               </button>
             </div>
           </div>
