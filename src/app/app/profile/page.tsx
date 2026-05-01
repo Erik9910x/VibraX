@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 import { usePlayerStore, usePlaylistStore, useFavoritesStore, useHistoryStore, useArtistStore } from '@/lib/store';
 import { User, Music, Heart, ListMusic, History, Settings, ChevronRight, Share2, Shield, Info, LogOut, Disc, Headphones, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
