@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Search, Library, Heart, Plus, Music, Menu, X, MoreHorizontal, Pin, Edit2, Share2, Trash2 } from 'lucide-react';
+import { Home, Search, Library, Heart, User, Plus, Music, Menu, X, MoreHorizontal, Pin, Edit2, Share2, Trash2 } from 'lucide-react';
 import { usePlaylistStore, useArtistStore } from '@/lib/store';
 import { cn, artistUrl, artistNameToId } from '@/lib/utils';
 import { useState, createContext, useContext, useRef, useEffect } from 'react';
