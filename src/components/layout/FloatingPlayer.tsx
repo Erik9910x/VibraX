@@ -159,7 +159,24 @@ export default function FloatingPlayer({ onMenuClick }: { onMenuClick?: () => vo
     const onTimeUpdate = () => {
       if (!isNaN(audio.duration)) setProgress(audio.currentTime);
     };
-    const onEnded = () => next();
+    const onEnded = () => {
+      const state = usePlayerStore.getState();
+      if (state.repeatMode === 'one') {
+        audio.currentTime = 0;
+        audio.play().catch(() => {});
+        setProgress(0);
+      } else {
+        next();
+        // If the track is the same (e.g. single track queue in Repeat All), next() won't trigger the track change effect.
+        // We need to manually restart it.
+        const newState = usePlayerStore.getState();
+        if (newState.currentTrack?.id === state.currentTrack?.id) {
+          audio.currentTime = 0;
+          audio.play().catch(() => {});
+          setProgress(0);
+        }
+      }
+    };
     
     audio.addEventListener('timeupdate', onTimeUpdate);
     audio.addEventListener('ended', onEnded);
