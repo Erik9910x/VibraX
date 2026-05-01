@@ -62,6 +62,7 @@ export default function FloatingPlayer({ onMenuClick }: { onMenuClick?: () => vo
     const initializeAudio = async () => {
       let audioUrl = currentTrack.previewUrl;
       
+      if (currentTrack.id.match(/^\d+$/) && currentTrack.previewUrl && currentTrack.previewUrl.includes('apple.com')) {
         try {
           const res = await fetch(`/api/music/upgrade?title=${encodeURIComponent(currentTrack.title)}&artist=${encodeURIComponent(currentTrack.artist)}`);
           if (res.ok) {
