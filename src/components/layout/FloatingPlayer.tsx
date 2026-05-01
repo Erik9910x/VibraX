@@ -62,6 +62,15 @@ export default function FloatingPlayer({ onMenuClick }: { onMenuClick?: () => vo
     const initializeAudio = async () => {
       let audioUrl = currentTrack.previewUrl;
       
+      // Start playing preview immediately for fast transition
+      if (audioUrl) {
+        audio.src = audioUrl;
+        audio.load();
+        if (usePlayerStore.getState().isPlaying) audio.play().catch(() => {});
+      } else {
+        audio.src = '';
+      }
+      
       if (currentTrack.id.match(/^\d+$/) && currentTrack.previewUrl && currentTrack.previewUrl.includes('apple.com')) {
         try {
           const res = await fetch(`/api/music/upgrade?title=${encodeURIComponent(currentTrack.title)}&artist=${encodeURIComponent(currentTrack.artist)}`);
@@ -70,19 +79,18 @@ export default function FloatingPlayer({ onMenuClick }: { onMenuClick?: () => vo
             if (data.url) {
               audioUrl = data.url;
               console.log(`Upgraded audio via Server API: ${data.source}`);
+              // Swap audio smoothly
+              const currentTime = audio.currentTime;
+              const wasPlaying = !audio.paused;
+              audio.src = audioUrl;
+              audio.load();
+              audio.currentTime = currentTime;
+              if (wasPlaying) audio.play().catch(() => {});
             }
           }
         } catch (e) {
           console.error("Failed to upgrade via Server API", e);
         }
-      }
-
-      if (audioUrl) {
-        audio.src = audioUrl;
-        audio.load();
-        if (usePlayerStore.getState().isPlaying) audio.play().catch(() => {});
-      } else {
-        audio.src = '';
       }
     };
 
@@ -161,6 +169,7 @@ export default function FloatingPlayer({ onMenuClick }: { onMenuClick?: () => vo
         audio.currentTime = 0;
         audio.play().catch(() => {});
         setProgress(0);
+        usePlayerStore.setState({ repeatMode: 'off' });
       } else {
         next();
         // If the track is the same (e.g. single track queue in Repeat All), next() won't trigger the track change effect.
@@ -418,7 +427,7 @@ export default function FloatingPlayer({ onMenuClick }: { onMenuClick?: () => vo
                           className={cn(
                             'text-3xl md:text-5xl lg:text-6xl font-black mb-8 md:mb-12 cursor-pointer leading-tight select-none origin-left',
                             'transition-[color,opacity,transform] duration-500 ease-out',
-                            isActive ? 'text-white scale-[1.02] opacity-100' 
+                            isActive ? 'text-[#fcd535] scale-[1.05] font-bold opacity-100 drop-shadow-[0_0_15px_rgba(252,213,53,0.8)]' 
                             : isPast ? 'text-white/25 scale-100 opacity-60' 
                             : 'text-white/15 scale-100 opacity-40 hover:text-white/40'
                           )}

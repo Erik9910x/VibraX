@@ -2,18 +2,27 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-// Use the secret key on the server to bypass RLS
-const supabaseKey = process.env.SUPABASE_SECRET_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseKey = process.env.SUPABASE_SECRET_KEY || '';
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+// Lazy initialization to avoid crashing the server if env vars are missing
+let supabase: any = null;
+function getSupabase() {
+  if (!supabase) {
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Supabase credentials missing from environment variables');
+    }
+    supabase = createClient(supabaseUrl, supabaseKey);
+  }
+  return supabase;
+}
 
 export async function savePreset(data: any): Promise<string> {
   // Generate 5 random alphanumeric characters
   const id = Math.random().toString(36).substring(2, 7).toUpperCase();
   const code = `VIBRAX-${id}`;
 
-  const { error } = await supabase
+  const { error } = await getSupabase()
     .from('presets')
     .insert([{ id: code, data }]);
 
@@ -26,7 +35,7 @@ export async function savePreset(data: any): Promise<string> {
 }
 
 export async function loadPreset(code: string): Promise<any> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('presets')
     .select('data')
     .eq('id', code.toUpperCase())
