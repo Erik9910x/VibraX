@@ -15,26 +15,26 @@ export async function GET(request: NextRequest) {
     `https://jiosaavn-api-privatecvc2.vercel.app/search/songs?query=${encodeURIComponent(title + ' ' + artist)}&limit=1`
   ];
 
-  for (const url of endpoints) {
-    try {
-      const res = await fetch(url, { next: { revalidate: 3600 } });
-      if (res.ok) {
-        const saavnData = await res.json();
-        const results = saavnData.data?.results || saavnData.data || saavnData.results || [];
-        if (results && results.length > 0) {
-          const song = results[0];
-          const dl = song.downloadUrl || song.download_url;
-          if (dl && dl.length > 0) {
-            // Find highest quality or just the last one
-            const audioUrl = dl[dl.length - 1].link || dl[dl.length - 1].url || dl[dl.length - 1];
-            return NextResponse.json({ url: audioUrl, source: url });
-          }
-        }
+  const fetchEndpoint = async (url: string) => {
+    const res = await fetch(url, { next: { revalidate: 3600 } });
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    const saavnData = await res.json();
+    const results = saavnData.data?.results || saavnData.data || saavnData.results || [];
+    if (results && results.length > 0) {
+      const song = results[0];
+      const dl = song.downloadUrl || song.download_url;
+      if (dl && dl.length > 0) {
+        return { url: dl[dl.length - 1].link || dl[dl.length - 1].url || dl[dl.length - 1], source: url };
       }
-    } catch (e) {
-      console.error(`Upgrade API failed for ${url}:`, e);
     }
-  }
+    throw new Error('No valid track data');
+  };
 
-  return NextResponse.json({ error: 'No full track found' }, { status: 404 });
+  try {
+    const result = await Promise.any(endpoints.map(fetchEndpoint));
+    return NextResponse.json(result);
+  } catch (e) {
+    console.error(`All endpoints failed for ${title} ${artist}`);
+    return NextResponse.json({ error: 'No full track found' }, { status: 404 });
+  }
 }

@@ -418,7 +418,7 @@ export default function FloatingPlayer({ onMenuClick }: { onMenuClick?: () => vo
                           className={cn(
                             'text-3xl md:text-5xl lg:text-6xl font-black mb-8 md:mb-12 cursor-pointer leading-tight select-none origin-left',
                             'transition-[color,opacity,transform] duration-500 ease-out',
-                            isActive ? 'text-[#fcd535] scale-[1.05] font-bold opacity-100 drop-shadow-[0_0_15px_rgba(252,213,53,0.8)]' 
+                            isActive ? 'text-white scale-[1.05] font-bold opacity-100 drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]' 
                             : isPast ? 'text-white/25 scale-100 opacity-60' 
                             : 'text-white/15 scale-100 opacity-40 hover:text-white/40'
                           )}
