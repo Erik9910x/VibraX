@@ -27,6 +27,7 @@ interface PlayerState {
   setProgress: (p: number) => void;
   toggleShuffle: () => void;
   toggleRepeat: () => void;
+  setDuration: (d: number) => void;
 }
 
 export const usePlayerStore = create<PlayerState>()(
@@ -95,6 +96,7 @@ export const usePlayerStore = create<PlayerState>()(
       toggleRepeat: () => set((s) => ({
         repeatMode: s.repeatMode === 'off' ? 'all' : s.repeatMode === 'all' ? 'one' : 'off',
       })),
+      setDuration: (d) => set({ duration: d }),
     }),
     { 
       name: 'vibrax-player',

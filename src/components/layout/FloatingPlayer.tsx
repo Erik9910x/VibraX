@@ -64,20 +64,32 @@ export default function FloatingPlayer({ onMenuClick }: { onMenuClick?: () => vo
       
       // Upgrade iTunes preview to full Saavn audio
       if (currentTrack.id.match(/^\d+$/) && currentTrack.previewUrl && currentTrack.previewUrl.includes('apple.com')) {
-        try {
-          const saavnRes = await fetch(`https://jiosaavn-api-privatecvc2.vercel.app/search/songs?query=${encodeURIComponent(currentTrack.title + ' ' + currentTrack.artist)}&limit=1`);
-          if (saavnRes.ok) {
-            const saavnData = await saavnRes.json();
-            if (saavnData.data && saavnData.data.results && saavnData.data.results.length > 0) {
-              const dl = saavnData.data.results[0].downloadUrl;
-              if (dl && dl.length > 0) {
-                // Find highest quality or just the last one
-                audioUrl = dl[dl.length - 1].link || dl[dl.length - 1].url;
+        const endpoints = [
+          `https://jio-saavn-api.vercel.app/api/search/songs?query=${encodeURIComponent(currentTrack.title + ' ' + currentTrack.artist)}&limit=1`,
+          `https://jio-saavn-api-phi.vercel.app/search?query=${encodeURIComponent(currentTrack.title + ' ' + currentTrack.artist)}&limit=1`,
+          `https://jiosaavn-api-privatecvc2.vercel.app/search/songs?query=${encodeURIComponent(currentTrack.title + ' ' + currentTrack.artist)}&limit=1`
+        ];
+
+        for (const url of endpoints) {
+          try {
+            const res = await fetch(url);
+            if (res.ok) {
+              const saavnData = await res.json();
+              const results = saavnData.data?.results || saavnData.data || saavnData.results || [];
+              if (results && results.length > 0) {
+                const song = results[0];
+                const dl = song.downloadUrl || song.download_url;
+                if (dl && dl.length > 0) {
+                  // Find highest quality or just the last one
+                  audioUrl = dl[dl.length - 1].link || dl[dl.length - 1].url || dl[dl.length - 1];
+                  console.log(`Upgraded audio via ${url}`);
+                  break; 
+                }
               }
             }
+          } catch (e) {
+            console.error(`Failed to upgrade via ${url}`, e);
           }
-        } catch (e) {
-          console.error("Failed to upgrade audio url", e);
         }
       }
 
@@ -178,11 +190,19 @@ export default function FloatingPlayer({ onMenuClick }: { onMenuClick?: () => vo
       }
     };
     
+    const onLoadedMetadata = () => {
+      if (!isNaN(audio.duration)) {
+        usePlayerStore.getState().setDuration(audio.duration);
+      }
+    };
+    
     audio.addEventListener('timeupdate', onTimeUpdate);
     audio.addEventListener('ended', onEnded);
+    audio.addEventListener('loadedmetadata', onLoadedMetadata);
     return () => {
       audio.removeEventListener('timeupdate', onTimeUpdate);
       audio.removeEventListener('ended', onEnded);
+      audio.removeEventListener('loadedmetadata', onLoadedMetadata);
     };
   }, [setProgress, next]);
 
