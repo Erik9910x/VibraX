@@ -62,35 +62,27 @@ export default function FloatingPlayer({ onMenuClick }: { onMenuClick?: () => vo
     const initializeAudio = async () => {
       let audioUrl = currentTrack.previewUrl;
       
-      // Start playing preview immediately for fast transition
-      if (audioUrl) {
-        audio.src = audioUrl;
-        audio.load();
-        if (usePlayerStore.getState().isPlaying) audio.play().catch(() => {});
-      } else {
-        audio.src = '';
-      }
-      
       if (currentTrack.id.match(/^\d+$/) && currentTrack.previewUrl && currentTrack.previewUrl.includes('apple.com')) {
         try {
           const res = await fetch(`/api/music/upgrade?title=${encodeURIComponent(currentTrack.title)}&artist=${encodeURIComponent(currentTrack.artist)}`);
           if (res.ok) {
             const data = await res.json();
             if (data.url) {
-              const upgradedUrl = data.url;
-              console.log(`Upgraded audio via Server API: ${data.source}`);
-              // Swap audio smoothly
-              const currentTime = audio.currentTime;
-              const wasPlaying = !audio.paused;
-              audio.src = upgradedUrl;
-              audio.load();
-              audio.currentTime = currentTime;
-              if (wasPlaying) audio.play().catch(() => {});
+              audioUrl = data.url;
+              console.log(`Upgraded audio via Server API`);
             }
           }
         } catch (e) {
           console.error("Failed to upgrade via Server API", e);
         }
+      }
+
+      if (audioUrl) {
+        audio.src = audioUrl;
+        audio.load();
+        if (usePlayerStore.getState().isPlaying) audio.play().catch(() => {});
+      } else {
+        audio.src = '';
       }
     };
 
@@ -169,7 +161,6 @@ export default function FloatingPlayer({ onMenuClick }: { onMenuClick?: () => vo
         audio.currentTime = 0;
         audio.play().catch(() => {});
         setProgress(0);
-        usePlayerStore.setState({ repeatMode: 'off' });
       } else {
         next();
         // If the track is the same (e.g. single track queue in Repeat All), next() won't trigger the track change effect.
