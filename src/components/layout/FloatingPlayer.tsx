@@ -77,12 +77,12 @@ export default function FloatingPlayer({ onMenuClick }: { onMenuClick?: () => vo
           if (res.ok) {
             const data = await res.json();
             if (data.url) {
-              audioUrl = data.url;
+              const upgradedUrl = data.url;
               console.log(`Upgraded audio via Server API: ${data.source}`);
               // Swap audio smoothly
               const currentTime = audio.currentTime;
               const wasPlaying = !audio.paused;
-              audio.src = audioUrl;
+              audio.src = upgradedUrl;
               audio.load();
               audio.currentTime = currentTime;
               if (wasPlaying) audio.play().catch(() => {});

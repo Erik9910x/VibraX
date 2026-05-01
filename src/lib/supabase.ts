@@ -6,18 +6,18 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseKey = process.env.SUPABASE_SECRET_KEY || '';
 
 // Lazy initialization to avoid crashing the server if env vars are missing
-let supabase: any = null;
+let supabaseInstance: ReturnType<typeof createClient> | null = null;
 function getSupabase() {
-  if (!supabase) {
+  if (!supabaseInstance) {
     if (!supabaseUrl || !supabaseKey) {
       throw new Error('Supabase credentials missing from environment variables');
     }
-    supabase = createClient(supabaseUrl, supabaseKey);
+    supabaseInstance = createClient(supabaseUrl, supabaseKey);
   }
-  return supabase;
+  return supabaseInstance;
 }
 
-export async function savePreset(data: any): Promise<string> {
+export async function savePreset(data: unknown): Promise<string> {
   // Generate 5 random alphanumeric characters
   const id = Math.random().toString(36).substring(2, 7).toUpperCase();
   const code = `VIBRAX-${id}`;
@@ -34,7 +34,7 @@ export async function savePreset(data: any): Promise<string> {
   return code;
 }
 
-export async function loadPreset(code: string): Promise<any> {
+export async function loadPreset(code: string): Promise<unknown> {
   const { data, error } = await getSupabase()
     .from('presets')
     .select('data')
