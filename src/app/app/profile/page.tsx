@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { usePlayerStore, usePlaylistStore, useFavoritesStore, useHistoryStore, useArtistStore } from '@/lib/store';
-import { User, Music, Heart, ListMusic, History, Settings, ChevronRight, Share2, Shield, Info, LogOut, Disc, Headphones, TrendingUp, Globe, Zap, Trash2 } from 'lucide-react';
+import { User, Music, Heart, ListMusic, History, Settings, ChevronRight, Share2, Shield, Info, LogOut, Disc, Headphones, TrendingUp, Globe, Zap, Trash2, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -15,6 +15,9 @@ export default function ProfilePage() {
   const followedArtists = useArtistStore((s) => s.followedArtists);
   
   const clearHistory = useHistoryStore((s) => s.clearHistory);
+  const [cacheSize, setCacheSize] = useState('124.5 MB');
+  const [cachePercent, setCachePercent] = useState('15%');
+  const [showAbout, setShowAbout] = useState(false);
   
   useEffect(() => {
     document.title = "Profile | VibraX";
@@ -200,7 +203,10 @@ export default function ProfilePage() {
               <div className="h-px bg-white/[0.06] my-6" />
               
               <div className="space-y-1">
-                <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-white/[0.04] text-white/60 hover:text-white transition-all">
+                <button 
+                  onClick={() => setShowAbout(true)}
+                  className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-white/[0.04] text-white/60 hover:text-white transition-all"
+                >
                   <Info className="w-4 h-4" />
                   <span className="text-sm">About VibraX</span>
                   <ChevronRight className="w-4 h-4 ml-auto opacity-30" />
@@ -242,13 +248,16 @@ export default function ProfilePage() {
               <h3 className="text-sm font-bold text-white/40 uppercase tracking-wider mb-4">Device Storage</h3>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs text-white/60">Offline Cache</span>
-                <span className="text-xs font-bold text-white">124.5 MB</span>
+                <span className="text-xs font-bold text-white">{cacheSize}</span>
               </div>
               <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden mb-4">
-                <div className="h-full bg-[#fcd535] w-[15%]" />
+                <div className="h-full bg-[#fcd535] transition-all duration-1000" style={{ width: cachePercent }} />
               </div>
               <button 
-                onClick={() => alert('Cache cleared successfully!')}
+                onClick={() => {
+                  setCacheSize('0 MB');
+                  setCachePercent('0%');
+                }}
                 className="flex items-center gap-1.5 text-[10px] font-black text-[#fcd535] uppercase tracking-widest hover:underline"
               >
                 <Trash2 className="w-3 h-3" />
@@ -261,12 +270,18 @@ export default function ProfilePage() {
               <div className="absolute -right-8 -bottom-8 opacity-20 group-hover:scale-110 transition-transform duration-700">
                 <Music className="w-32 h-32 text-[#181a20]" />
               </div>
-              <h3 className="text-xl font-black text-[#181a20] mb-2">VibraX Premium</h3>
+              <h3 className="text-xl font-black text-[#181a20] mb-2">VibraX Support</h3>
               <p className="text-[#181a20]/70 text-sm font-bold mb-4 leading-relaxed">
-                Enjoy offline playback, no ads, and the highest audio quality.
+                Ủng hộ tác giả để duy trì máy chủ & phát triển tính năng mới.
               </p>
-              <button className="px-6 py-2 rounded-full bg-[#181a20] text-white text-xs font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl">
-                Upgrade Now
+              <button 
+                onClick={() => {
+                  const btn = document.querySelector('button[aria-label="Support Us"], button:has(.lucide-heart)');
+                  if (btn) (btn as HTMLButtonElement).click();
+                }}
+                className="px-6 py-2 rounded-full bg-[#181a20] text-white text-xs font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl"
+              >
+                Support US
               </button>
             </div>
 
@@ -291,6 +306,75 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* About VibraX Popup */}
+      {showAbout && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowAbout(false)} />
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="relative w-full max-w-lg bg-[#181a20] border border-white/10 rounded-3xl p-6 md:p-8 shadow-2xl z-10 max-h-[85vh] flex flex-col"
+          >
+            <button 
+              onClick={() => setShowAbout(false)}
+              className="absolute top-4 right-4 p-2 rounded-full bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-[#fcd535] flex items-center justify-center shrink-0">
+                <Music className="w-6 h-6 text-black" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-black text-white leading-tight">VibraX</h2>
+                <p className="text-[#fcd535] text-xs font-bold uppercase tracking-widest">Version 1.0.4-stable</p>
+              </div>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+              <h3 className="text-sm font-bold text-white/50 uppercase tracking-widest mb-4">Function Log</h3>
+              
+              <div className="space-y-6">
+                <div className="relative pl-4 border-l-2 border-[#fcd535]/30">
+                  <div className="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-[#fcd535]" />
+                  <span className="text-xs font-bold text-[#fcd535] mb-1 block">v1.0.4 - May 2026</span>
+                  <ul className="text-sm text-white/70 space-y-1 list-disc pl-4">
+                    <li>Added Support US and Facebook links</li>
+                    <li>Implemented Promise.any API parallelization for sub-second loading</li>
+                    <li>Added LOCAL- base64 preset fallback avoiding btoa errors</li>
+                    <li>Restored accurate Repeat One logic</li>
+                  </ul>
+                </div>
+                
+                <div className="relative pl-4 border-l-2 border-white/10">
+                  <div className="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-white/30" />
+                  <span className="text-xs font-bold text-white/40 mb-1 block">v1.0.3 - April 2026</span>
+                  <ul className="text-sm text-white/50 space-y-1 list-disc pl-4">
+                    <li>Fixed Supabase strict typing build errors</li>
+                    <li>Introduced dynamic Next.js API route proxying</li>
+                    <li>Added Spotify-style white neon lyrics glow</li>
+                  </ul>
+                </div>
+
+                <div className="relative pl-4 border-l-2 border-white/10">
+                  <div className="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-white/30" />
+                  <span className="text-xs font-bold text-white/40 mb-1 block">v1.0.0 - Genesis</span>
+                  <ul className="text-sm text-white/50 space-y-1 list-disc pl-4">
+                    <li>Initial release with JioSaavn integration</li>
+                    <li>Built core UI matching Figma designs</li>
+                    <li>Added Zustand persist store</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-6 pt-4 border-t border-white/10 text-center">
+              <p className="text-xs text-white/30">Made with ❤️ by Erik</p>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
