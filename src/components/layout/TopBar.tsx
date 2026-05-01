@@ -137,10 +137,13 @@ export default function TopBar({ onMenuClick }: { onMenuClick?: () => void }) {
               let val = input?.value?.trim();
               if (!val) return;
               try {
-                let state: any;
-                if (val.startsWith('LOCAL-')) {
-                  state = JSON.parse(atob(val.replace('LOCAL-', '')));
+                let state: any = null;
+                // Check local storage first
+                const localData = localStorage.getItem(`preset_${val.toUpperCase()}`);
+                if (localData) {
+                  state = JSON.parse(localData);
                 } else {
+                  // Fallback to Supabase cloud
                   const { loadPreset } = await import('@/lib/supabase');
                   state = await loadPreset(val) as any;
                 }

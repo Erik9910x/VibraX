@@ -237,9 +237,11 @@ export default function Sidebar({ collapsed, onToggle }: { collapsed: boolean; o
                   const { savePreset } = await import('@/lib/supabase');
                   code = await savePreset(state);
                 } catch(e) {
-                  // Fallback to local encoding if Supabase is unavailable
-                  console.warn('Supabase save failed, falling back to local base64');
-                  code = 'LOCAL-' + btoa(JSON.stringify(state));
+                  // Fallback to localStorage if Supabase is unavailable
+                  console.warn('Supabase save failed, falling back to local storage');
+                  const id = Math.random().toString(36).substring(2, 7).toUpperCase();
+                  code = `VIBRAX-${id}`;
+                  localStorage.setItem(`preset_${code}`, JSON.stringify(state));
                 }
                 
                 // Copy to clipboard immediately and show alert
