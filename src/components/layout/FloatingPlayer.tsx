@@ -132,6 +132,21 @@ export default function FloatingPlayer({ onMenuClick }: { onMenuClick?: () => vo
     }
   }, [currentTrack, isPlaying]);
 
+  // Pre-fetch the next track to eliminate wait time (Vercel Cache will serve it instantly)
+  useEffect(() => {
+    const state = usePlayerStore.getState();
+    const queue = state.queue;
+    const nextIndex = state.queueIndex + 1;
+    if (nextIndex < queue.length) {
+      const nextTrack = queue[nextIndex];
+      if (nextTrack.id.match(/^\d+$/) && nextTrack.previewUrl?.includes('apple.com')) {
+        // Ping the upgrade API silently
+        fetch(`/api/music/upgrade?title=${encodeURIComponent(nextTrack.title)}&artist=${encodeURIComponent(nextTrack.artist)}`)
+          .catch(() => {}); // ignore errors, it's just a prefetch
+      }
+    }
+  }, [currentTrack?.id]);
+
   // Handle Play/Pause
   useEffect(() => {
     const audio = audioRef.current;

@@ -137,8 +137,13 @@ export default function TopBar({ onMenuClick }: { onMenuClick?: () => void }) {
               let val = input?.value?.trim();
               if (!val) return;
               try {
-                const { loadPreset } = await import('@/lib/supabase');
-                const state = await loadPreset(val) as any;
+                let state: any;
+                if (val.startsWith('LOCAL-')) {
+                  state = JSON.parse(atob(val.replace('LOCAL-', '')));
+                } else {
+                  const { loadPreset } = await import('@/lib/supabase');
+                  state = await loadPreset(val) as any;
+                }
                 const { useFavoritesStore, usePlaylistStore, useArtistStore } = await import('@/lib/store');
                 if (state.favorites) useFavoritesStore.setState({ favoriteIds: state.favorites });
                 if (state.playlists) usePlaylistStore.setState({ playlists: state.playlists });
