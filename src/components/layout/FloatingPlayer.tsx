@@ -62,34 +62,17 @@ export default function FloatingPlayer({ onMenuClick }: { onMenuClick?: () => vo
     const initializeAudio = async () => {
       let audioUrl = currentTrack.previewUrl;
       
-      // Upgrade iTunes preview to full Saavn audio
-      if (currentTrack.id.match(/^\d+$/) && currentTrack.previewUrl && currentTrack.previewUrl.includes('apple.com')) {
-        const endpoints = [
-          `https://jio-saavn-api.vercel.app/api/search/songs?query=${encodeURIComponent(currentTrack.title + ' ' + currentTrack.artist)}&limit=1`,
-          `https://jio-saavn-api-phi.vercel.app/search?query=${encodeURIComponent(currentTrack.title + ' ' + currentTrack.artist)}&limit=1`,
-          `https://jiosaavn-api-privatecvc2.vercel.app/search/songs?query=${encodeURIComponent(currentTrack.title + ' ' + currentTrack.artist)}&limit=1`
-        ];
-
-        for (const url of endpoints) {
-          try {
-            const res = await fetch(url);
-            if (res.ok) {
-              const saavnData = await res.json();
-              const results = saavnData.data?.results || saavnData.data || saavnData.results || [];
-              if (results && results.length > 0) {
-                const song = results[0];
-                const dl = song.downloadUrl || song.download_url;
-                if (dl && dl.length > 0) {
-                  // Find highest quality or just the last one
-                  audioUrl = dl[dl.length - 1].link || dl[dl.length - 1].url || dl[dl.length - 1];
-                  console.log(`Upgraded audio via ${url}`);
-                  break; 
-                }
-              }
+        try {
+          const res = await fetch(`/api/music/upgrade?title=${encodeURIComponent(currentTrack.title)}&artist=${encodeURIComponent(currentTrack.artist)}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.url) {
+              audioUrl = data.url;
+              console.log(`Upgraded audio via Server API: ${data.source}`);
             }
-          } catch (e) {
-            console.error(`Failed to upgrade via ${url}`, e);
           }
+        } catch (e) {
+          console.error("Failed to upgrade via Server API", e);
         }
       }
 
